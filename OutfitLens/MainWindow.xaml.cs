@@ -191,11 +191,46 @@ public partial class MainWindow : Window
                 .Where(line=>line.Contains(basePart,StringComparison.Ordinal))
                 .OrderByDescending(line=>line.Length)
                 .FirstOrDefault();
-            if(candidate==null) return null;
+            if(candidate==null)
+            {
+                // 長い衣装名はゲームUI上で2行以上に折り返される。
+                // OCRの行を表示順に連結し、部位名の末尾までを復元する。
+                string joined=string.Concat(lines);
+                int end=joined.IndexOf(basePart,StringComparison.Ordinal);
+                if(end>=0)
+                {
+                    candidate=joined[..(end+basePart.Length)];
+                }
+                else
+                {
+                    // 改行後が1文字だけの場合、OCRが末尾文字を落とすことがある。
+                    // 「・」以降が部位名に近ければ、既知の正式部位名で補完する。
+                    joined=Regex.Replace(joined,@"[☆★◇◆]?\d+$",string.Empty);
+                    int separator=joined.LastIndexOf('・');
+                    if(separator>=0)
+                    {
+                        string detectedSuffix=joined[(separator+1)..];
+                        if(EditDistance(detectedSuffix,basePart)<=Math.Max(2,basePart.Length/2))
+                            candidate=joined[..(separator+1)]+basePart;
+                    }
+                    // 一部の衣装名には「・トップス」などの部位接尾辞がない。
+                    // 名前欄だけに限定したOCR領域なので、星数を除いた文字列を採用する。
+                    candidate??=joined;
+                }
+            }
+            else
+            {
+                int end=candidate.IndexOf(basePart,StringComparison.Ordinal);
+                candidate=candidate[..(end+basePart.Length)];
+            }
             candidate=Regex.Replace(candidate,@"^[^\p{L}\p{N}]+",string.Empty);
             candidate=Regex.Replace(candidate,@"[☆★◇◆]?\d+$",string.Empty);
             candidate=candidate.Trim('◇','◆','☆','★','・','|','｜');
-            if(candidate.Length<=basePart.Length || !candidate.Contains(basePart,StringComparison.Ordinal))
+            candidate=Regex.Replace(candidate,@"Tシャッ$","Tシャツ",RegexOptions.IgnoreCase);
+            candidate=Regex.Replace(candidate,@"グロープ$","グローブ");
+            if(candidate.Length<2 || candidate.All(char.IsDigit) ||
+               candidate.IndexOfAny([',','，'])>=0 ||
+               candidate is "自由染色" or "入手方法" or "保存")
                 return null;
             return candidate;
         }
