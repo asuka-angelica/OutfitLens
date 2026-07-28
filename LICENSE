@@ -1,28 +1,54 @@
-Outfit Lens Non-Commercial License 1.0
+Outfit Lens Source-Available Personal Use License 1.0
 
-Copyright (c) 2026 asuka-angelica
+Copyright (c) 2026 asuka-angelica. All rights reserved.
 
-Permission is granted to use, copy, modify, and redistribute this software and
-its source code for personal, educational, research, and other non-commercial
-purposes, subject to the following conditions:
+This software is source-available, but it is not open-source software.
 
-1. This copyright notice and license must be included with all copies or
-   substantial portions of the software.
-2. The software and modified versions may not be sold, monetized, included in
-   a paid product or service, used for advertising revenue, or otherwise used
-   for commercial advantage or monetary compensation.
-3. The software may not be represented as official, authorized, endorsed, or
-   sponsored by the game publisher, developer, or any related party.
-4. Rights to third-party names, games, screenshots, characters, user-provided
-   images, and other third-party materials are not granted by this license.
-5. Users and redistributors are responsible for complying with applicable
-   laws, platform terms, and relevant fan-content guidelines.
+Permission is granted, without charge, only to:
+
+1. view and inspect the source code for transparency, security review,
+   education, and personal evaluation;
+2. run the official, unmodified software for personal, non-commercial use; and
+3. modify the source code privately for personal, non-commercial use, provided
+   that the modified source code and resulting binaries are not published,
+   shared, distributed, transferred, or made available to any third party.
+
+The following activities are expressly prohibited without prior written
+permission from the copyright holder:
+
+1. redistributing, mirroring, re-uploading, sublicensing, or repackaging the
+   source code, official binaries, archives, installers, or any modified
+   version, whether free of charge or for compensation;
+2. publishing or distributing the software, binaries, or a derivative work
+   outside the repository-fork functionality provided by GitHub;
+3. selling, monetizing, renting, licensing, bundling with a paid product or
+   service, using for advertising revenue, donation rewards, or otherwise
+   using the software for commercial advantage or monetary compensation;
+4. removing or obscuring copyright, license, attribution, safety, or
+   unofficial-project notices; and
+5. representing the software or any derivative as official, authorized,
+   endorsed, sponsored, or supported by the game publisher, developer, or any
+   related party.
+
+Official unmodified releases may be downloaded only from the copyright
+holder's GitHub Releases page. Linking to that page is permitted and
+encouraged. This license does not grant permission to copy or redistribute
+those release files.
+
+For clarity, when this repository is public, viewing and forking it through
+GitHub is permitted to the extent required by GitHub's Terms of Service.
+Creating a GitHub fork does not grant permission to distribute compiled
+binaries, release archives, or modified versions of the application.
+
+No rights are granted to third-party names, games, screenshots, characters,
+user-provided images, or other third-party materials. Users remain responsible
+for complying with applicable laws, platform terms, and relevant fan-content
+guidelines.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM,
+OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
