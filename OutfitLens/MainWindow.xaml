@@ -29,7 +29,15 @@
     <TextBlock Text="01  元画像" Foreground="{StaticResource Accent}" FontWeight="Bold"/>
     <Button Content="通常スクリーンショットを選択" Click="ChooseBase_Click" Margin="0,10,0,22"/>
     <TextBlock Text="02  衣装部屋" Foreground="{StaticResource Accent}" FontWeight="Bold"/>
-    <TextBlock Text="選択中の衣装が表示された画面をまとめて追加します。" Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,6,0,10"/>
+    <Border Background="#FFF9F6" BorderBrush="#E6D4D4" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,8,0,10">
+     <StackPanel>
+      <TextBlock Text="貼り付ける画面" FontWeight="SemiBold" Foreground="{StaticResource Ink}"/>
+      <TextBlock Text="「衣装部屋/トップス」「衣装部屋/靴」など、左上に部位名が表示された画面を1部位ずつ追加してください。"
+                 Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,4,0,0"/>
+      <TextBlock Text="装備中のアイコンが左側で選択されている状態が目印です。"
+                 Foreground="{StaticResource Accent}" TextWrapping="Wrap" Margin="0,4,0,0"/>
+     </StackPanel>
+    </Border>
     <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
      <Button Content="ファイルから追加" Click="ChooseWardrobe_Click"/>
      <Button Content="クリップボードから追加  Ctrl+V" Click="PasteWardrobe_Click"/>
