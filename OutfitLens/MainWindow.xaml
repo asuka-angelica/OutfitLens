@@ -47,6 +47,115 @@
     <Border Background="#F3E9E5" BorderBrush="#DFC7CA" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
      <StackPanel>
       <TextBlock Text="アプリから衣装部屋を撮影" FontWeight="SemiBold"/>
+      <TextBlock Text="最初にゲーム画面を選択します。ゲームを前面へ切り替えず、その画面だけを撮影します。"
+                 Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,4,0,8"/>
+      <DockPanel Margin="0,0,0,8">
+       <Button DockPanel.Dock="Right" Content="一覧を更新" Click="RefreshTargets_Click" Padding="10,7" Margin="8,0,0,0"/>
+       <ComboBox x:Name="TargetWindowBox" DisplayMemberPath="Title" Padding="8,7"
+                 Background="White" Foreground="{StaticResource Ink}"/>
+      </DockPanel>
+      <Button Content="指定したゲーム画面を撮影" Click="CaptureWindow_Click" Margin="0"/>
+     </StackPanel>
+    </Border>
+    <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+     <Button Content="ファイルから追加" Click="ChooseWardrobe_Click"/>
+     <Button Content="クリップボードから追加  Ctrl+V" Click="PasteWardrobe_Click"/>
+    </StackPanel>
+    <TextBlock Text="③ 衣装カードの配置を選ぶ" Foreground="{StaticResource Accent}" FontWeight="Bold" Margin="0,4,0,7"/>
+    <ComboBox x:Name="PlacementBox" SelectionChanged="Placement_Changed" SelectedIndex="0" Padding="10,8" Margin="0,0,0,18"
+              Background="White" Foreground="{StaticResource Ink}">
+     <ComboBoxItem Content="右側の専用フレーム（画像に重ならない）" Tag="Right"/>
+     <ComboBoxItem Content="下側の専用フレーム（画像に重ならない）" Tag="Bottom"/>
+     <ComboBoxItem Content="画像内・左上" Tag="TopLeft"/>
+     <ComboBoxItem Content="画像内・右上" Tag="TopRight"/>
+     <ComboBoxItem Content="画像内・左下" Tag="BottomLeft"/>
+     <ComboBoxItem Content="画像内・右下" Tag="BottomRight"/>
+    </ComboBox>
+    <CheckBox x:Name="ShowIconsBox" Content="衣装アイコンを表示する" IsChecked="True"
+              Checked="Icons_Changed" Unchecked="Icons_Changed" Margin="2,0,0,18"
+              Foreground="{StaticResource Ink}"/>
+    <ItemsControl x:Name="ItemsList">
+     <ItemsControl.ItemTemplate>
+      <DataTemplate>
+       <Border Background="{StaticResource Panel}" CornerRadius="10" Padding="10" Margin="0,0,0,8" BorderBrush="#E6D4D4" BorderThickness="1">
+        <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="46"/><ColumnDefinition Width="82"/><ColumnDefinition Width="*"/><ColumnDefinition Width="30"/></Grid.ColumnDefinitions>
+         <Border Width="40" Height="40" Background="#F3E9E5" CornerRadius="5"><Image Source="{Binding Icon}" Stretch="Uniform"/></Border>
+         <ComboBox Grid.Column="1" ItemsSource="{Binding PartOptions}" SelectedItem="{Binding Part}"
+                   VerticalAlignment="Center" Margin="6,0" Padding="4" Background="White"/>
+         <TextBox Grid.Column="2" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"/>
+         <Button Grid.Column="3" Content="×" Tag="{Binding}" Click="RemoveItem_Click" Padding="4" Margin="4,0,0,0"/>
+        </Grid>
+       </Border>
+      </DataTemplate>
+     </ItemsControl.ItemTemplate>
+    </ItemsControl>
+    <Border BorderBrush="#DECBCD" Background="#FFF9F6" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,8,0,0">
+     <TextBlock Foreground="{StaticResource Muted}" TextWrapping="Wrap" Text="名称が読み取れない場合は「名称を確認してください」と表示されます。出力前に欄を直接編集できます。"/>
+    </Border>
+   </StackPanel>
+  </ScrollViewer>
+  <DockPanel Grid.Row="2" Grid.ColumnSpan="3" Margin="0,20,0,0">
+   <StackPanel VerticalAlignment="Center">
+    <TextBlock Text="④ 完成画像を保存する" Foreground="{StaticResource Accent}" FontWeight="Bold"/>
+    <TextBlock x:Name="Status" Text="まずゲーム内スクリーンショットを選択してください" Foreground="{StaticResource Muted}"/>
+   </StackPanel>
+   <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+    <Button Content="プレビュー更新" Click="Refresh_Click"/>
+    <Button x:Name="ExportButton" Content="完成画像をPNGで保存" Click="Export_Click" IsEnabled="False"
+            Background="{StaticResource Accent}" Foreground="White" Padding="22,11" Margin="0"/>
+   </StackPanel>
+  </DockPanel>
+ </Grid>
+</Window>
+<Window x:Class="OutfitLens.MainWindow"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Title="Outfit Lens" Width="1260" Height="820" MinWidth="980" MinHeight="680" Icon="Assets/app.ico"
+ PreviewKeyDown="Window_PreviewKeyDown"
+ Background="#F8F1EE" Foreground="{StaticResource Ink}" WindowStartupLocation="CenterScreen">
+ <Grid Margin="28">
+  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <Grid.ColumnDefinitions><ColumnDefinition Width="1.55*"/><ColumnDefinition Width="18"/><ColumnDefinition Width="1*"/></Grid.ColumnDefinitions>
+  <StackPanel Grid.ColumnSpan="3" Margin="0,0,0,20">
+   <TextBlock Text="O U T F I T   L E N S  ♡" Foreground="{StaticResource Accent}" FontSize="13" FontWeight="Bold"/>
+   <TextBlock Text="今日の装いを、一枚の記憶に。" FontFamily="Yu Mincho" FontSize="30" FontWeight="SemiBold" Margin="0,5,0,4"/>
+   <TextBlock Text="完全オフライン。画像はこのPCから外へ送信されません。" Foreground="{StaticResource Muted}"/>
+  </StackPanel>
+  <Border Grid.Row="1" Background="#EADDD9" CornerRadius="16" Padding="14" BorderBrush="#DFC7CA" BorderThickness="1">
+   <Grid>
+    <Image x:Name="Preview" Stretch="Uniform"/>
+    <Border x:Name="EmptyPreview" Background="#FFF9F6">
+     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+      <TextBlock Text="◇" Foreground="{StaticResource Accent}" FontSize="42" HorizontalAlignment="Center"/>
+      <TextBlock Text="ゲーム内スクリーンショットを追加" FontSize="16" Margin="0,10,0,5"/>
+      <TextBlock Text="PNG / JPG" Foreground="{StaticResource Muted}" HorizontalAlignment="Center"/>
+     </StackPanel>
+    </Border>
+   </Grid>
+  </Border>
+  <ScrollViewer Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto">
+   <StackPanel>
+    <DockPanel>
+     <TextBlock Text="① ゲーム内スクリーンショットを選ぶ" Foreground="{StaticResource Accent}" FontWeight="Bold"/>
+     <TextBlock x:Name="BaseStepStatus" Text="未選択" Foreground="{StaticResource Muted}" HorizontalAlignment="Right"/>
+    </DockPanel>
+    <TextBlock Text="ゲーム内で撮影した画像を選びます。画像は「ピクチャー → StarASIA」に保存されています。"
+               Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+    <Button Content="ゲーム内スクリーンショットを選択" Click="ChooseBase_Click" Margin="0,10,0,22"/>
+    <DockPanel>
+     <TextBlock Text="② 衣装部屋の画面を追加する" Foreground="{StaticResource Accent}" FontWeight="Bold"/>
+     <TextBlock x:Name="WardrobeStepStatus" Text="0件" Foreground="{StaticResource Muted}" HorizontalAlignment="Right"/>
+    </DockPanel>
+    <Border Background="#FFF9F6" BorderBrush="#E6D4D4" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,8,0,10">
+     <StackPanel>
+      <TextBlock Text="Alt + PrintScreenで、衣装部屋の画面全体をコピーします。" FontWeight="SemiBold" Foreground="{StaticResource Ink}"/>
+      <TextBlock Text="左上の部位名と右下の衣装名が見える状態で、1部位ずつ追加してください。"
+                 Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,4,0,0"/>
+     </StackPanel>
+    </Border>
+    <Border Background="#F3E9E5" BorderBrush="#DFC7CA" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+     <StackPanel>
+      <TextBlock Text="アプリから衣装部屋を撮影" FontWeight="SemiBold"/>
       <TextBlock Text="最初にゲーム画面を選択します。撮影時の画面切り替えと復帰は自動です。"
                  Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,4,0,8"/>
       <DockPanel Margin="0,0,0,8">
