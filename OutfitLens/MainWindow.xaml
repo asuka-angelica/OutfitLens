@@ -18,7 +18,7 @@
     <Border x:Name="EmptyPreview" Background="#FFF9F6">
      <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
       <TextBlock Text="◇" Foreground="{StaticResource Accent}" FontSize="42" HorizontalAlignment="Center"/>
-      <TextBlock Text="通常スクリーンショットを追加" FontSize="16" Margin="0,10,0,5"/>
+      <TextBlock Text="ゲーム内スクリーンショットを追加" FontSize="16" Margin="0,10,0,5"/>
       <TextBlock Text="PNG / JPG" Foreground="{StaticResource Muted}" HorizontalAlignment="Center"/>
      </StackPanel>
     </Border>
@@ -26,23 +26,45 @@
   </Border>
   <ScrollViewer Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto">
    <StackPanel>
-    <TextBlock Text="01  元画像" Foreground="{StaticResource Accent}" FontWeight="Bold"/>
-    <Button Content="通常スクリーンショットを選択" Click="ChooseBase_Click" Margin="0,10,0,22"/>
-    <TextBlock Text="02  衣装部屋" Foreground="{StaticResource Accent}" FontWeight="Bold"/>
+    <DockPanel>
+     <TextBlock Text="① ゲーム内スクリーンショットを選ぶ" Foreground="{StaticResource Accent}" FontWeight="Bold"/>
+     <TextBlock x:Name="BaseStepStatus" Text="未選択" Foreground="{StaticResource Muted}" HorizontalAlignment="Right"/>
+    </DockPanel>
+    <TextBlock Text="ゲーム内で撮影した画像を選びます。画像は「ピクチャー → StarASIA」に保存されています。"
+               Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+    <Button Content="ゲーム内スクリーンショットを選択" Click="ChooseBase_Click" Margin="0,10,0,22"/>
+    <DockPanel>
+     <TextBlock Text="② 衣装部屋の画面を追加する" Foreground="{StaticResource Accent}" FontWeight="Bold"/>
+     <TextBlock x:Name="WardrobeStepStatus" Text="0件" Foreground="{StaticResource Muted}" HorizontalAlignment="Right"/>
+    </DockPanel>
     <Border Background="#FFF9F6" BorderBrush="#E6D4D4" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,8,0,10">
      <StackPanel>
-      <TextBlock Text="貼り付ける画面" FontWeight="SemiBold" Foreground="{StaticResource Ink}"/>
-      <TextBlock Text="「衣装部屋/トップス」「衣装部屋/靴」など、左上に部位名が表示された画面を1部位ずつ追加してください。"
+      <TextBlock Text="Alt + PrintScreenで、衣装部屋の画面全体をコピーします。" FontWeight="SemiBold" Foreground="{StaticResource Ink}"/>
+      <TextBlock Text="左上の部位名と右下の衣装名が見える状態で、1部位ずつ追加してください。"
                  Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,4,0,0"/>
-      <TextBlock Text="装備中のアイコンが左側で選択されている状態が目印です。"
-                 Foreground="{StaticResource Accent}" TextWrapping="Wrap" Margin="0,4,0,0"/>
+     </StackPanel>
+    </Border>
+    <Border Background="#F3E9E5" BorderBrush="#DFC7CA" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+     <StackPanel>
+      <TextBlock Text="アプリから衣装部屋を撮影" FontWeight="SemiBold"/>
+      <TextBlock Text="最初にゲーム画面を選択します。撮影時の画面切り替えと復帰は自動です。"
+                 Foreground="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,4,0,8"/>
+      <DockPanel Margin="0,0,0,8">
+       <Button DockPanel.Dock="Right" Content="一覧を更新" Click="RefreshTargets_Click" Padding="10,7" Margin="8,0,0,0"/>
+       <ComboBox x:Name="TargetWindowBox" DisplayMemberPath="Title" Padding="8,7"
+                 Background="White" Foreground="{StaticResource Ink}"/>
+      </DockPanel>
+      <WrapPanel>
+       <Button Content="ウィンドウを撮影" Click="CaptureWindow_Click" Margin="0,0,8,0"/>
+       <Button Content="モニターを撮影（フルスクリーン）" Click="CaptureMonitor_Click" Margin="0"/>
+      </WrapPanel>
      </StackPanel>
     </Border>
     <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
      <Button Content="ファイルから追加" Click="ChooseWardrobe_Click"/>
      <Button Content="クリップボードから追加  Ctrl+V" Click="PasteWardrobe_Click"/>
     </StackPanel>
-    <TextBlock Text="03  衣装カードの配置" Foreground="{StaticResource Accent}" FontWeight="Bold" Margin="0,4,0,7"/>
+    <TextBlock Text="③ 衣装カードの配置を選ぶ" Foreground="{StaticResource Accent}" FontWeight="Bold" Margin="0,4,0,7"/>
     <ComboBox x:Name="PlacementBox" SelectionChanged="Placement_Changed" SelectedIndex="0" Padding="10,8" Margin="0,0,0,18"
               Background="White" Foreground="{StaticResource Ink}">
      <ComboBoxItem Content="右側の専用フレーム（画像に重ならない）" Tag="Right"/>
@@ -76,10 +98,14 @@
    </StackPanel>
   </ScrollViewer>
   <DockPanel Grid.Row="2" Grid.ColumnSpan="3" Margin="0,20,0,0">
-   <TextBlock x:Name="Status" Text="準備完了" Foreground="{StaticResource Muted}" VerticalAlignment="Center"/>
+   <StackPanel VerticalAlignment="Center">
+    <TextBlock Text="④ 完成画像を保存する" Foreground="{StaticResource Accent}" FontWeight="Bold"/>
+    <TextBlock x:Name="Status" Text="まずゲーム内スクリーンショットを選択してください" Foreground="{StaticResource Muted}"/>
+   </StackPanel>
    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
     <Button Content="プレビュー更新" Click="Refresh_Click"/>
-    <Button Content="PNGとして保存" Click="Export_Click" Background="{StaticResource Accent}" Foreground="White" Padding="22,11" Margin="0"/>
+    <Button x:Name="ExportButton" Content="完成画像をPNGで保存" Click="Export_Click" IsEnabled="False"
+            Background="{StaticResource Accent}" Foreground="White" Padding="22,11" Margin="0"/>
    </StackPanel>
   </DockPanel>
  </Grid>
