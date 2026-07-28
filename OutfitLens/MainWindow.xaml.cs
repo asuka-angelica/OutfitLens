@@ -233,10 +233,7 @@ public partial class MainWindow : Window
             foreach(var overlay in overlays) overlay.Hide();
             try
             {
-                await Task.Delay(160);
-                captured=new Bitmap(bounds.Width,bounds.Height,PixelFormat.Format32bppArgb);
-                using var graphics=Graphics.FromImage(captured);
-                graphics.CopyFromScreen(bounds.Left,bounds.Top,0,0,bounds.Size,CopyPixelOperation.SourceCopy);
+                captured=await CaptureThroughDwmThumbnail(target,bounds);
             }
             finally
             {
@@ -258,19 +255,82 @@ public partial class MainWindow : Window
         }
     }
 
+    static async Task<Bitmap> CaptureThroughDwmThumbnail(IntPtr source,Rectangle bounds)
+    {
+        var surface=new Window
+        {
+            Width=100,
+            Height=100,
+            WindowStyle=WindowStyle.None,
+            ResizeMode=ResizeMode.NoResize,
+            ShowActivated=false,
+            ShowInTaskbar=false,
+            Topmost=true,
+            Background=System.Windows.Media.Brushes.Black
+        };
+        IntPtr thumbnail=IntPtr.Zero;
+        try
+        {
+            surface.Show();
+            IntPtr destination=new System.Windows.Interop.WindowInteropHelper(surface).Handle;
+            SetWindowPos(destination,new IntPtr(-1),bounds.Left,bounds.Top,bounds.Width,bounds.Height,0x0050);
+
+            int registerResult=DwmRegisterThumbnail(destination,source,out thumbnail);
+            if(registerResult!=0 || thumbnail==IntPtr.Zero)
+                throw new InvalidOperationException("指定したゲーム画面の描画を取得できませんでした。");
+
+            var properties=new DWM_THUMBNAIL_PROPERTIES
+            {
+                dwFlags=0x00000001|0x00000004|0x00000008,
+                rcDestination=new RECT { Left=0,Top=0,Right=bounds.Width,Bottom=bounds.Height },
+                opacity=255,
+                fVisible=1
+            };
+            int updateResult=DwmUpdateThumbnailProperties(thumbnail,ref properties);
+            if(updateResult!=0)
+                throw new InvalidOperationException("指定したゲーム画面の描画を更新できませんでした。");
+
+            await Task.Delay(180);
+            var bitmap=new Bitmap(bounds.Width,bounds.Height,PixelFormat.Format32bppArgb);
+            using var graphics=Graphics.FromImage(bitmap);
+            graphics.CopyFromScreen(bounds.Left,bounds.Top,0,0,bounds.Size,CopyPixelOperation.SourceCopy);
+            return bitmap;
+        }
+        finally
+        {
+            if(thumbnail!=IntPtr.Zero) DwmUnregisterThumbnail(thumbnail);
+            surface.Close();
+        }
+    }
+
     static Rectangle ToRectangle(RECT rect) =>
         Rectangle.FromLTRB(rect.Left,rect.Top,rect.Right,rect.Bottom);
 
     [StructLayout(LayoutKind.Sequential)]
     struct RECT { public int Left,Top,Right,Bottom; }
 
+    [StructLayout(LayoutKind.Sequential)]
+    struct DWM_THUMBNAIL_PROPERTIES
+    {
+        public uint dwFlags;
+        public RECT rcDestination;
+        public RECT rcSource;
+        public byte opacity;
+        public int fVisible;
+        public int fSourceClientAreaOnly;
+    }
+
     [DllImport("user32.dll")] static extern bool EnumWindows(EnumWindowsProc callback,IntPtr parameter);
     [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr hWnd);
     [DllImport("user32.dll")] static extern bool IsWindow(IntPtr hWnd);
     [DllImport("user32.dll")] static extern bool IsIconic(IntPtr hWnd);
+    [DllImport("user32.dll")] static extern bool SetWindowPos(IntPtr hWnd,IntPtr insertAfter,int x,int y,int width,int height,uint flags);
     [DllImport("user32.dll",CharSet=CharSet.Unicode)] static extern int GetWindowText(IntPtr hWnd,StringBuilder text,int count);
     [DllImport("user32.dll")] static extern int GetWindowTextLength(IntPtr hWnd);
     [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr hWnd,out RECT rect);
+    [DllImport("dwmapi.dll")] static extern int DwmRegisterThumbnail(IntPtr destination,IntPtr source,out IntPtr thumbnail);
+    [DllImport("dwmapi.dll")] static extern int DwmUpdateThumbnailProperties(IntPtr thumbnail,ref DWM_THUMBNAIL_PROPERTIES properties);
+    [DllImport("dwmapi.dll")] static extern int DwmUnregisterThumbnail(IntPtr thumbnail);
     delegate bool EnumWindowsProc(IntPtr hWnd,IntPtr parameter);
 
     static async Task<string> DetectPart(Bitmap b)
